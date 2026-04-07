@@ -1,11 +1,11 @@
-// swift-tools-version:5.0
+// swift-tools-version: 5.7
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 import PackageDescription
 
 let package = Package(
     name: "UTMConversion",
     platforms: [
-        .iOS(.v12), .macOS(.v10_10)
+        .iOS(.v14), .macOS(.v10_13)
     ],
     products: [
         .library(
@@ -15,11 +15,9 @@ let package = Package(
     targets: [
         .target(
             name: "UTMConversion",
-            dependencies: [],
-            path: "UTMConversion"),
+            dependencies: []),
         .testTarget(
             name: "UTMConversionTests",
-            dependencies: ["UTMConversion"],
-            path: "UTMConversionTests"),
+            dependencies: ["UTMConversion"]),
     ]
 )
