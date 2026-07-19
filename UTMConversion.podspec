@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name = 'UTMConversion'
   s.version = '1.4.0'
-  s.swift_version = '5.0'
+  s.swift_version = '6.0'
   s.cocoapods_version = '>= 1.4.0'
   s.summary = 'Convert between latitude/longitude and the UTM coordinate system.'
   s.description  = <<~DESC
@@ -16,10 +16,11 @@ Pod::Spec.new do |s|
   s.authors = {
     'Peter Ringset' => 'peter@ringset.no'
   }
-  s.ios.deployment_target = '8.0'
+  s.ios.deployment_target = '14.0'
+  s.osx.deployment_target = '10.13'
   s.source = {
     git: 'https://github.com/wtw-software/UTMConversion.git',
     tag: s.version
   }
-  s.source_files = 'UTMConversion/*.{swift,h}'
+  s.source_files = 'Sources/UTMConversion/*.{swift,h}'
 end
