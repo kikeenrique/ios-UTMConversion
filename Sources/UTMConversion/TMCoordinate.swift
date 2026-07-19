@@ -1,5 +1,12 @@
-import CoreLocation
+#if canImport(Foundation)
 import Foundation
+#endif
+
+#if canImport(Glibc)
+import Glibc
+#elseif canImport(Android)
+import Android
+#endif
 
 let utmScaleFactor = 0.9996
 
@@ -30,13 +37,13 @@ struct TMCoordinate {
     }
     
     /**
-        Init with a CLLocationCoordinate
-     
+        Init with a GeoCoordinate
+
         - Parameter coordinate: The coordinate to init with
         - Parameter centralMeridian: The central meridian of the earth
         - Parameter datum: The datum to use
      */
-    init(coordinate: CLLocationCoordinate2D, centralMeridian: Double, datum: UTMDatum) {
+    init(coordinate: GeoCoordinate, centralMeridian: Double, datum: UTMDatum) {
         let phi = toRadians(degrees: coordinate.latitude) // Latitude in radians
         let lambda = toRadians(degrees: coordinate.longitude) // Longitude in radians
         
@@ -131,9 +138,9 @@ struct TMCoordinate {
      
         - Parameter centralMeridian: The central meridian of the earth
         - Parameter datum: The datum to use
-     
+
      */
-    func coordinate(centralMeridian: Double, datum: UTMDatum) -> CLLocationCoordinate2D {
+    func coordinate(centralMeridian: Double, datum: UTMDatum) -> GeoCoordinate {
         /* The local variables Nf, nuf2, tf, and tf2 serve the same purpose as N, nu2, t, and t2 in MapLatLonToXY, but they are computed with respect to the footpoint latitude phif. x1frac, x2frac, x2poly, x3poly, etc. are to enhance readability and to optimize computations. */
 
         let x = easting
@@ -204,7 +211,7 @@ struct TMCoordinate {
         /* Calculate longitude */
         let longitudeRadians = centralMeridian + x1frac * x + x3frac * x3poly * pow(x, 3.0) + x5frac * x5poly * pow(x, 5.0) + x7frac * x7poly * pow(x, 7.0)
         
-        return CLLocationCoordinate2D(latitude: toDegrees(radians: latitudeRadians), longitude: toDegrees(radians: longitudeRadians))
+        return GeoCoordinate(latitude: toDegrees(radians: latitudeRadians), longitude: toDegrees(radians: longitudeRadians))
     }
     
     /**

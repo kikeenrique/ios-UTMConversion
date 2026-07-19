@@ -1,33 +1,40 @@
+#if canImport(CoreLocation)
 import Foundation
 import CoreLocation
 
 public extension CLLocationCoordinate2D {
-    
-    
+
+    /**
+     A portable `GeoCoordinate` with the same latitude/longitude
+     */
+    var geoCoordinate: GeoCoordinate {
+        return GeoCoordinate(latitude: latitude, longitude: longitude)
+    }
+
     /**
      Calculates the UTM coordinate of the receiver
-     
+
      - Parameter datum: The datum to use, defaults to WGS84 which should be fine for most applications
-     
+
      */
     func utmCoordinate(datum: UTMDatum = UTMDatum.wgs84) -> UTMCoordinate {
-        let zone = self.zone
-        return TMCoordinate(coordinate: self, centralMeridian: zone.centralMeridian, datum: datum).utmCoordinate(zone: zone, hemisphere: hemisphere)
+        return geoCoordinate.utmCoordinate(datum: datum)
     }
-    
-    
+
+
     /**
      The UTM grid zone
      */
     var zone: UTMGridZone {
-        return UTMGridZone(floor((longitude + 180.0) / 6)) + 1;
+        return geoCoordinate.zone
     }
-    
+
     /**
      The UTM hemisphere
      */
     var hemisphere: UTMHemisphere {
-        return latitude < 0 ? .southern : .northern
+        return geoCoordinate.hemisphere
     }
-    
+
 }
+#endif

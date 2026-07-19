@@ -1,5 +1,16 @@
-import CoreLocation
+#if canImport(Foundation)
 import Foundation
+#endif
+
+#if canImport(Glibc)
+import Glibc
+#elseif canImport(Android)
+import Android
+#endif
+
+#if canImport(CoreLocation)
+import CoreLocation
+#endif
 
 /** UTM grid zone is a positive number between 1 and 60 */
 public typealias UTMGridZone = UInt
@@ -19,7 +30,7 @@ extension UTMGridZone {
     - northern: The northern hemisphere
     - southern: The southern hemisphere
  */
-public enum UTMHemisphere {
+public enum UTMHemisphere: Sendable {
     case northern
     case southern
 }
@@ -27,7 +38,7 @@ public enum UTMHemisphere {
 /**
     Geodetic datum to define the size of the earth, given as equitorial and polar radius.
  */
-public struct UTMDatum {
+public struct UTMDatum: Sendable {
     /** The radius around the equator */
     public let equitorialRadius: Double
     
@@ -46,7 +57,7 @@ public struct UTMDatum {
 /**
     Universal Transverse Mercator (UTM) coordinate which divies the earth into 60 different zones. The coordinates northing and easting are relative to the specified zone, and are also relative to the hemisphere.
  */
-public struct UTMCoordinate {
+public struct UTMCoordinate: Sendable {
     
     /** Northing, corresponds to the latitude */
     public let northing: Double
@@ -71,22 +82,38 @@ public struct UTMCoordinate {
     }
     
     /**
-        Calculates the latitude/longitude coordinate of the receiver
-     
+        Calculates the portable latitude/longitude coordinate of the receiver
+
         - Parameter datum: The datum to use, defaults to WGS84 which should be fine for most applications
      */
-    public func coordinate(datum: UTMDatum = UTMDatum.wgs84) -> CLLocationCoordinate2D {
+    public func geoCoordinate(datum: UTMDatum = UTMDatum.wgs84) -> GeoCoordinate {
         return TMCoordinate(utmCoordinate: self).coordinate(centralMeridian: zone.centralMeridian, datum: datum)
     }
-    
+
+}
+
+#if canImport(CoreLocation)
+public extension UTMCoordinate {
+
     /**
-        Calculates the location (CLLocation) coordinate of the receiver
-     
+        Calculates the latitude/longitude coordinate of the receiver
+
         - Parameter datum: The datum to use, defaults to WGS84 which should be fine for most applications
      */
-    public func location(datum: UTMDatum = UTMDatum.wgs84) -> CLLocation {
+    func coordinate(datum: UTMDatum = UTMDatum.wgs84) -> CLLocationCoordinate2D {
+        let geo = geoCoordinate(datum: datum)
+        return CLLocationCoordinate2D(latitude: geo.latitude, longitude: geo.longitude)
+    }
+
+    /**
+        Calculates the location (CLLocation) coordinate of the receiver
+
+        - Parameter datum: The datum to use, defaults to WGS84 which should be fine for most applications
+     */
+    func location(datum: UTMDatum = UTMDatum.wgs84) -> CLLocation {
         let coordinateStruct = coordinate(datum: datum)
         return CLLocation(latitude: coordinateStruct.latitude, longitude: coordinateStruct.longitude)
     }
-    
+
 }
+#endif
